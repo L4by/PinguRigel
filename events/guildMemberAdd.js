@@ -13,7 +13,8 @@ module.exports = async (client, member) => {
       ].join('\n'))
       .addField('역할 안내', [
         '나이에 따라 다양한 역할을 지급받을 수 있습니다.',
-        '!역할 받기 명령어를 입력해 알맞은 역할을 받아보세요.',
+        '**`!역할 목록`** 명령어를 입력해 역할을 확인할 수 있습니다.',
+        '확인하셨다면 **`!역할 받기 역할명`**을 입력해  알맞은 역할을 받아보세요.',
       ].join('\n'));
   await channel.send(member.toString(), welcomeEmbed).catch(() => {});
 };
