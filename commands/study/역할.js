@@ -4,7 +4,7 @@ const path = require('path');
 const rolePath = path.join(__dirname, '../../data/roles.json');
 
 exports.run = async (client, message, [action, ...val], level) => { // eslint-disable-line no-unused-vars
-  if (!['목록', '받기'].includes(action) && val?.length < 1) {
+  if (!['목록'].includes(action) && val?.length < 1) {
     return message.reply([
       '사용 방법이 잘못되었습니다.',
       `사용 방법: \`${message.prefix}${this.help.usage}\``,
@@ -23,28 +23,21 @@ exports.run = async (client, message, [action, ...val], level) => { // eslint-di
 
   switch (action) {
     case '받기':
-      const filteredRole = roleList.filter((roles) => {
-        message.guild.roles.cache.has(roles) &&
-        !message.member.roles.cache.has(roles);
-      });
-
-      if (filteredRole.length < 1) {
-        return message.reply([
-          '받을 수 있는 역할이 존재하지 않습니다.',
-          '역할을 제거하고 싶은 경우 관리자에게 문의해주세요.',
+      const addRole = message.guild.roles.cache.find((role) => role.id === value || role.name === value);
+      if (!roleList.includes(addRole.id)) {
+        message.reply([
+          '받을 수 있는 역할이 아닙니다.',
+          `**\`${this.help.name} 목록\`** 명령어로 받을 수 있는 역할을 확인해보세요.`,
         ].join('\n'));
-      }
-      const roleEmbed = new Discord.MessageEmbed()
-          .setColor('AQUA')
-          .setAuthor('역할 받기')
-          .setTimestamp();
-      const mappedRole = filteredRole.map((roles) => Discord.escapeMarkdown(message.guild.roles.cache.get(roles).name));
-      const awaitMsg = await message.channel.send('불러오고 있습니다. 잠시 기다려주세요..');
-      const roleSelection = await client.arrayPageReturn(false, message, awaitMsg, mappedRole, ((x) => x), roleEmbed, {pagecount: 10});
-      if (roleSelection.status === 'select') {
+      } else if (message.member.roles.cache.has(addRole.id)) {
+        message.reply([
+          '이 역할을 이미 가지고 있습니다.',
+          '역할을 제거하고 싶으신 경우 관리자에게 문의해주세요.',
+        ].join('\n'));
+      } else {
         try {
-          await message.member.roles.add(filteredRole[roleSelection.index]);
-          await message.reply(`**\`${roleSelection.value}\`** 역할을 추가했습니다!`);
+          await message.member.roles.add(addRole);
+          await message.reply(`**\`${addRole.name}\`** 역할을 받았습니다!`);
         } catch (err) {
           console.error(err);
           await message.reply([
