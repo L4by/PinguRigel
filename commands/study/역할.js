@@ -4,7 +4,7 @@ const path = require('path');
 const rolePath = path.join(__dirname, '../../data/roles.json');
 
 exports.run = async (client, message, [action, ...val], level) => { // eslint-disable-line no-unused-vars
-  if (action !== '목록' && val?.length < 1) {
+  if (!['목록', '받기'].includes(action) && val?.length < 1) {
     return message.reply([
       '사용 방법이 잘못되었습니다.',
       `사용 방법: \`${message.prefix}${this.help.usage}\``,
