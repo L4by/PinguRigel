@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "discord.js": "github:discordjs/discord.js",
+    "moment": "^2.29.1"
+  },
+  "name": "pingurigel",
+  "version": "1.6.8",
+  "description": "Pingu",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^7.14.0",
+    "eslint-config-google": "^0.14.0"
+  }
+}
