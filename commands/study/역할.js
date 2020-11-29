@@ -24,19 +24,14 @@ exports.run = async (client, message, [action, ...val], level) => { // eslint-di
   switch (action) {
     case '받기':
       const addRole = message.guild.roles.cache.find((role) => role.id === value || role.name === value);
-      if (message.member.roles.cache.size > 1) {
-        message.reply([
-          '이미 역할을 지급받았습니다.',
-          '잘못 지급받은 경우라면 관리자에게 문의해주세요.',
-        ].join('\n'));
-      } else if (!roleList.includes(addRole.id)) {
+      if (!roleList.includes(addRole.id)) {
         message.reply([
           '받을 수 있는 역할이 아닙니다.',
           `**\`${this.help.name} 목록\`** 명령어로 받을 수 있는 역할을 확인해보세요.`,
         ].join('\n'));
       } else {
         try {
-          await message.member.roles.add(addRole);
+          await message.member.roles.set([addRole.id]);
           await message.reply(`**\`${addRole.name}\`** 역할을 받았습니다!`);
         } catch (err) {
           console.error(err);
@@ -48,7 +43,7 @@ exports.run = async (client, message, [action, ...val], level) => { // eslint-di
       }
       break;
     case '추가':
-      if (level < 3) return;
+      if (level < 3) return message.reply('해당 동작을 실행하기 위한 권한이 없습니다.');
       const role = message.guild.roles.cache.find((role) => role.id === value || role.name === value);
       const dangerousPerms = [
         'MANAGE_GUILD',
@@ -75,7 +70,7 @@ exports.run = async (client, message, [action, ...val], level) => { // eslint-di
       }
       break;
     case '제거':
-      if (level < 3) return;
+      if (level < 3) return message.reply('해당 동작을 실행하기 위한 권한이 없습니다.');
       const roleRemoval = message.guild.roles.cache.find((role) => role.id === value || role.name === value);
       if (roleList.length < 1) {
         message.reply('제거할 역할이 없습니다.');
@@ -93,7 +88,8 @@ exports.run = async (client, message, [action, ...val], level) => { // eslint-di
       const viewEmbed = new Discord.MessageEmbed()
           .setColor('GREEN')
           .setAuthor('부여 가능한 역할 목록')
-          .setDescription(viewableRole.length > 0 ? viewableRole : '부여 가능한 역할이 없습니다.')
+          .setDescription(viewableRole.length > 0 ? viewableRole : '**부여 가능한 역할이 없습니다.**')
+          .setFooter('부여 가능한 역할 백제 가능한 역할 엌ㅋㅋㅋ')
           .setTimestamp();
       await message.channel.send(viewEmbed);
       break;
