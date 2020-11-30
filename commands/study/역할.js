@@ -24,7 +24,7 @@ exports.run = async (client, message, [action, ...val], level) => { // eslint-di
   switch (action) {
     case '받기':
       const addRole = message.guild.roles.cache.find((role) => role.id === value || role.name === value);
-      if (!roleList.includes(addRole.id)) {
+      if (!roleList.includes(addRole?.id)) {
         message.reply([
           '받을 수 있는 역할이 아닙니다.',
           `**\`${this.help.name} 목록\`** 명령어로 받을 수 있는 역할을 확인해보세요.`,
