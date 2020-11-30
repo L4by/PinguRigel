@@ -9,7 +9,7 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
       `\`${classList.join(', ')}\``,
     ].join('\n'));
   } else {
-    const chosenClass = `${classList[args[0]]}쌤`;
+    const chosenClass = `${args[0]}쌤`;
     const classTeacher = message.guild.roles.cache.find((role) => role.name === chosenClass);
     if (!classTeacher) {
       await message.reply([
