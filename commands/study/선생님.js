@@ -11,7 +11,7 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
         ].join('\n'))
         .setFooter('For BlueRigel\'s Study Cafe | with <3');
     teacherRoles.map((role) => {
-      embed.addField(role.name, role.members.map((teacher) => {
+      const status = role.members.map((teacher) => {
         const status = teacher.presence.status;
         let display;
         if (status === 'offline') display = `~~${teacher}~~`;
@@ -20,7 +20,8 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
         else if (status === 'online') display = `**${teacher}**`;
         else display = teacher.toString();
         return display;
-      }).join('\n'), true);
+      }).join('\n');
+      embed.addField(role.name, role.members.size ? status : '(선생님 없음)', true);
     });
     await message.channel.send(embed);
   }
