@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
   const teacherRoles = message.guild.roles.cache.filter((role) => role.name.endsWith('쌤'));
   const classList = teacherRoles.map((role) => role.name.slice(0, role.name.length - 1));
-  if (!args || args.length < 1 || !classList[args?.[0]]) {
+  if (!args || args.length < 1 || !classList.includes(args?.[0])) {
     await message.reply([
       '사용 방법이 잘못되었습니다.',
       '선생님 목록을 조회 가능한 과목으로 다시 시도해주세요:',
