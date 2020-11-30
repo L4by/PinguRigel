@@ -21,8 +21,8 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
           .setColor('#FFD700')
           .setAuthor(`선생님 목록 (전체 ${classTeacher.members.size}명)`)
           .setDescription([
-            '온라인 중인 선생님은 [O]가, 자리 비움, 다른 용무 중, 오프라인인 선생님은 각각 [I], [N], [A]가 이름 앞에 붙습니다.',
-            '일과 시간에는 이 상태, 특히 다른 용무 중인 선생님들을 호출하는 것이 권장되지 않습니다.',
+            '[O]: 온라인, [A]: 오프라인, [I]: 자리 비움, [N]: 다른 용무 중',
+            '일과 시간에는 온라인이 아닌 선생님들을 호출하는 것이 권장되지 않습니다.',
           ].join('\n'))
           .setFooter('For BlueRigel\'s Study Cafe | with <3');
       const teacherStatus = classTeacher.members.map((teacher) => {
