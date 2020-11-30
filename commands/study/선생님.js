@@ -25,18 +25,16 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
             '일과 시간에는 이 상태, 특히 다른 용무 중인 선생님들을 호출하는 것이 권장되지 않습니다.',
           ].join('\n'))
           .setFooter('For BlueRigel\'s Study Cafe | with <3');
-      classTeacher.map((role) => {
-        const status = role.members.map((teacher) => {
-          const status = teacher.presence.status;
-          let display;
-          if (status === 'offline') display = `[A] ${teacher}`;
-          else if (status === 'idle') display = `[I] ${teacher}`;
-          else if (status === 'dnd') display = `[N] ${teacher}`;
-          else if (status === 'online') display = `[O] ${teacher}`;
-          return display;
-        }).join('\n');
-        embed.addField(role.name, role.members.size ? status : '(선생님 없음)', true);
-      });
+      const teacherStatus = classTeacher.members.map((teacher) => {
+        const status = teacher.presence.status;
+        let display;
+        if (status === 'offline') display = `[A] ${teacher}`;
+        else if (status === 'idle') display = `[I] ${teacher}`;
+        else if (status === 'dnd') display = `[N] ${teacher}`;
+        else if (status === 'online') display = `[O] ${teacher}`;
+        return display;
+      }).join('\n');
+      embed.addField(classTeacher.name, classTeacher.members.size ? teacherStatus : '(선생님 없음)', true);
       await message.channel.send(embed);
     }
   }
