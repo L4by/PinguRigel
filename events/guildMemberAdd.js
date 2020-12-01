@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 
 module.exports = async (client, member) => {
+  if (member.user.bot) return;
   const channel = member.guild.channels.cache.get('719089452802244659');
   if (!channel) return;
   const welcomeEmbed = new Discord.MessageEmbed()
