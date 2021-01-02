@@ -1,6 +1,5 @@
 const fs = require('fs');
-const path = require('path');
-const roleMembers = path.join(__dirname, '../../data/members.json');
+const roleMembers = './data/members.json';
 
 module.exports = async (client, oldMember, newMember) => {
   if (!oldMember.roles.cache.equals(newMember.roles) && fs.existsSync(roleMembers)) {

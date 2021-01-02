@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 const fs = require('fs');
-const path = require('path');
-const roleMembers = path.join(__dirname, '../../data/members.json');
+const roleMembers = './data/members.json';
 
 module.exports = async (client, member) => {
   if (member.user.bot) return;
