@@ -27,6 +27,7 @@ module.exports = async (client, member) => {
   if (memberFile.hasOwnProperty(member.id)) {
     await Promise.all(memberFile[member.id].map(async (role) => {
       if (!member.guild.roles.cache.has(role)) return;
+      await client.waitFor(2000);
       await member.roles.add(role).catch(() => {});
     }));
   }
