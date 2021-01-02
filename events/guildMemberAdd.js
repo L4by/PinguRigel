@@ -1,4 +1,7 @@
 const Discord = require('discord.js');
+const fs = require('fs');
+const path = require('path');
+const roleMembers = path.join(__dirname, '../../data/members.json');
 
 module.exports = async (client, member) => {
   if (member.user.bot) return;
@@ -19,4 +22,13 @@ module.exports = async (client, member) => {
       ].join('\n'))
       .setFooter(`계정 생성 일시: ${client.getDate(member.user.createdAt, 'YYYY년 MM월 DD일 HH:mm:ss')}`);
   await channel.send(member.toString(), welcomeEmbed).catch(() => {});
+
+  if (!fs.existsSync(roleMembers)) return;
+  const memberFile = JSON.parse(fs.readFileSync(roleMembers).toString());
+  if (memberFile.hasOwnProperty(member.id)) {
+    await Promise.all(memberFile[member.id].map(async (role) => {
+      if (!member.guild.roles.has(role)) return;
+      await member.roles.add(role).catch(() => {});
+    }));
+  }
 };
