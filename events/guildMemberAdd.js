@@ -27,7 +27,7 @@ module.exports = async (client, member) => {
   const memberFile = JSON.parse(fs.readFileSync(roleMembers).toString());
   if (memberFile.hasOwnProperty(member.id)) {
     await Promise.all(memberFile[member.id].map(async (role) => {
-      if (!member.guild.roles.has(role)) return;
+      if (!member.guild.roles.cache.has(role)) return;
       await member.roles.add(role).catch(() => {});
     }));
   }
