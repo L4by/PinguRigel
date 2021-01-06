@@ -4,6 +4,9 @@ const path = require('path');
 const rolePath = path.join(__dirname, '../../data/roles.json');
 
 exports.run = async (client, message, [action, ...val], level) => { // eslint-disable-line no-unused-vars
+  // 랜덤 개소리
+  const nextBuyeo = ['후고구려', '고려', '고구려', '백제', '후백제', '두막루'];
+
   if (!['목록'].includes(action) && val?.length < 1) {
     return message.reply([
       '사용 방법이 잘못되었습니다.',
@@ -94,7 +97,7 @@ exports.run = async (client, message, [action, ...val], level) => { // eslint-di
           .setColor('GREEN')
           .setAuthor('부여 가능한 역할 목록')
           .setDescription(viewableRole.length > 0 ? viewableRole : '**부여 가능한 역할이 없습니다.**')
-          .setFooter('부여 가능한 역할 백제 가능한 역할 엌ㅋㅋㅋ')
+          .setFooter(`부여 가능한 역할 ${nextBuyeo.random()} 가능한 역할 엌ㅋㅋㅋ`)
           .setTimestamp();
       await message.channel.send(viewEmbed);
       break;
