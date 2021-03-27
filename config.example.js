@@ -11,6 +11,15 @@ const config = {
   // Bot status message
   status: [],
 
+  channels: {
+    welcome: '',
+    extraVerification: '',
+  },
+
+  roles: {
+    extraVerification: '',
+  },
+
   // Permission level settings
   permLevels: [
     // This is the lowest permisison level, this is for non-roled users.
