@@ -7,8 +7,11 @@ module.exports = async (client, member) => {
   if (member.user.bot) return;
   const welcomeChannel = member.guild.channels.cache.get(client.config.channels.welcome);
   const extraChannel = member.guild.channels.cache.get(client.config.channels.extraVerification);
+  const joinDiff = moment().diff(member.user.createdAt, 'days');
   if (!welcomeChannel || !extraChannel) return;
-  const welcomeEmbed = new Discord.MessageEmbed()
+
+  if (joinDiff >= 180) {
+    const welcomeEmbed = new Discord.MessageEmbed()
       .setAuthor(`${Discord.escapeMarkdown(member.user.tag)}님, 환영합니다!`)
       .setColor('ORANGE')
       .addField('서버 안내', [
@@ -22,8 +25,10 @@ module.exports = async (client, member) => {
         '확인하셨다면 **`!역할 받기 역할명`**을 입력해  알맞은 역할을 받아보세요.',
       ].join('\n'))
       .setFooter(`계정 생성 일시: ${client.getDate(member.user.createdAt, 'YYYY년 MM월 DD일 HH:mm:ss')}`);
-  await welcomeChannel.send(member.toString(), welcomeEmbed).catch(() => {});
-  if (moment().diff(member.user.createdAt, 'days') < 180) {
+    await welcomeChannel.send(member.toString(), welcomeEmbed).catch(() => {});
+  }
+
+  if (joinDiff < 180) {
     await member.roles.add(client.config.roles.extraVerification).catch(() => {});
     const extraVerification = new Discord.MessageEmbed()
         .setAuthor('계정 생성일이 6개월 이내입니다!')
