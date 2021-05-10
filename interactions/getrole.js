@@ -18,7 +18,7 @@ exports.run = async (client, interaction) => { // eslint-disable-line no-unused-
       'If you believe this is in error, please contact to administrator.',
     ]);
   } else {
-    await member.roles.add(role.id);
+    await member.roles.set([role.id]);
     await interaction.editReply([
       `:white_check_mark: Done! Now you have **\`${role.name}\`** role. GG!`,
     ]);
