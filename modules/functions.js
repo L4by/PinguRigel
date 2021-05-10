@@ -101,184 +101,6 @@ module.exports = (client) => {
     return require('moment')(date).format(formatDate);
   };
 
-  /*
-    RANDOM STRING FUNCTION
-    ALPHA-NUMBERIC | ALPHABET | NUMBERIC
-    */
-
-  client.randomString = (len = 6, an) => {
-    an = an && an.toLowerCase();
-    let str = '';
-    let i = 0;
-    let min = an === 'a' ? 10 : 0;
-    let max = an === 'n' ? 10 : 62;
-    for (;i++ < len;) {
-      let r = Math.random() * (max - min) + min << 0;
-      str += String.fromCharCode(r += r > 9 ? r < 36 ? 55 : 61 : 48);
-    }
-    return str;
-  };
-
-  /* CREATE ARRAY PAGE */
-  client.ArrayPage = class {
-    constructor(target, valueRaw) {
-      if (!target || target.constructor !== Array) {
-        this.array = [];
-      } else {
-        this.array = target;
-      }
-
-      if (!valueRaw || !Math.floor(valueRaw) || parseInt(valueRaw) < 1 || parseInt(valueRaw) > 20) {
-        this.perPage = 10;
-      } else {
-        this.perPage = parseInt(valueRaw);
-      }
-
-      this.maxPage = Number.isInteger(this.array.length / this.perPage) ? Math.floor(this.array.length / this.perPage) : Math.floor(this.array.length / this.perPage) + 1;
-    }
-
-    page(numberRaw) {
-      if (!numberRaw || !Math.floor(numberRaw)) return undefined;
-      const number = parseInt(numberRaw);
-      const page = this.array.slice(Math.floor(this.perPage * (number - 1)), Math.floor(this.perPage * number));
-      page.pageNumber = number;
-      if (!page.length) return undefined;
-      return page;
-    }
-  };
-
-  client.arrayPageReturn = async (restrict, message, baseMessage, list, desc, embed, option) => {
-    if (!message || !baseMessage || !embed) return;
-    if (!list || (list && list.constructor !== Array)) return;
-    if (!desc || (desc && desc.constructor !== Function)) return;
-    if (option && option.constructor !== Object) return;
-
-    const optionResv = {
-      forward: true,
-      backward: true,
-      last: true,
-      first: true,
-      moveto: true,
-      select: true,
-      cancel: true,
-      pagecount: 5,
-    };
-
-    const optionDesc = {
-      forward: '다음 페이지 : **`다음`**, **`>`** 입력',
-      backward: '이전 페이지 : **`이전`**, **`<`** 입력',
-      last: '마지막 페이지 : **`마지막`**, **`>>`** 입력',
-      first: '처음 페이지 : **`처음`**, **`<<`** 입력',
-      moveto: '페이지 이동 : **`이동 [번호]`** 입력',
-      select: '대상 선택 : **`선택 [번호]`** 입력',
-      cancel: '명령 취소 : **`취소`**, **`X`** 입력',
-    };
-
-    if (option) Object.keys(option).map((x) => { optionResv[x] = option[x]; });
-
-    const resultPage = new client.ArrayPage(list, optionResv.pagecount);
-
-    let repeat = true;
-    let i = 1;
-
-    const result = {
-      value: undefined,
-      index: undefined,
-      status: undefined,
-    };
-
-    const cancel = () => {
-      const cancelEmbed = new Discord.MessageEmbed()
-        .setAuthor('검색을 종료합니다.');
-      cancelEmbed.footer = embed.footer;
-      baseMessage.edit('', cancelEmbed);
-      baseMessage.delete({ timeout: 5000 });
-      repeat = false;
-      result.status = 'cancel';
-    };
-
-    do {
-      embed.setDescription(resultPage.page(i) ? `${`${resultPage.page(i).map((x, index) => `[${index + 1}] ${desc(x)}`).join('\n')}`
-                + `\n\n페이지 ${i}/${resultPage.maxPage} : ${list.length}개의 결과 - ${resultPage.page(i).length}개 표시중\n\n`}${
-        Object.keys(optionDesc).filter((x) => optionResv[x]).map((x) => optionDesc[x]).join('\n')}` : '대상이 없습니다.');
-
-      await baseMessage.edit('', embed);
-      await baseMessage.channel.awaitMessages((m) => m.author === message.author, { time: 30000, max: 1, error: ['time'] }).then((collection) => {
-        const text = collection.map((x) => x.content).join(' ').trim().split(/ +/g);
-        const colClear = () => {
-          collection.map((x) => {
-            x.delete().catch((err) => console.error(err));
-          });
-        };
-
-        const optionFuncRaw = {
-          forward: {
-            key: ['다음', '>'],
-            com: () => {
-              colClear();
-              if (!resultPage.page(i + 1)) return;
-              return i++;
-            },
-          },
-          backward: {
-            key: ['이전', '<'],
-            com: () => {
-              colClear();
-              if (!resultPage.page(i - 1)) return;
-              return i--;
-            },
-          },
-          last: {
-            key: ['마지막', '>>'],
-            com: () => {
-              colClear();
-              return i = resultPage.maxPage;
-            },
-          },
-          first: {
-            key: ['처음', '<<'],
-            com: () => {
-              colClear();
-              return i = 1;
-            },
-          },
-          moveto: {
-            key: ['이동'],
-            com: () => {
-              colClear();
-              if (!Math.floor(text[1]) || !resultPage.page(parseInt(text[1]))) return;
-              return i = parseInt(text[1]);
-            },
-          },
-          select: {
-            key: ['선택'],
-            com: () => {
-              if (!Math.floor(text[1]) || parseInt(text[1]) < 1 || parseInt(text[1]) > resultPage.page(i).length) return collection.map((x) => x.delete());
-
-              result.index = Math.floor(parseInt(text[1]) + (optionResv.pagecount * (i - 1)) - 1);
-              result.value = list[result.index];
-              result.status = 'select';
-
-              return repeat = false;
-            },
-          },
-          cancel: {
-            key: ['취소', 'X'],
-            com: cancel,
-          },
-        };
-
-        const optionFunc = Object.keys(optionFuncRaw).filter((x) => optionResv[x]).map((x) => optionFuncRaw[x]);
-        const optionCom = Object.values(optionFunc).find((x) => x.key.includes(text[0].toUpperCase()));
-        optionCom ? optionCom.com() : (restrict ? optionFuncRaw.cancel.com() : colClear());
-      }).catch((err) => {
-        console.error(err);
-        return cancel();
-      });
-    } while (repeat);
-    return result;
-  };
-
   client.loadCommand = (commandName) => {
     try {
       client.logger.log(`Loading Command: ${commandName}`);
@@ -334,13 +156,39 @@ module.exports = (client) => {
     });
   };
 
-  client.cleanMessage = (msg) => {
-    return msg.cleanContent.replace(/\n/g, '\n\t');
+  client.loadInteraction = (name) => {
+    let interaction;
+    try {
+      interaction = require(`../interactions/${name}.js`);
+      client.logger.log(`Loading Interaction: ${name}`);
+      client.interactions.set(name, interaction);
+      return false;
+    } catch (e) {
+      return `Unable to load Interaction ${name}: ${e.stack}`;
+    }
+  };
+
+  client.unloadInteraction = (name) => {
+    const file = `../interactions/${name}.js`;
+    if (!client.interactions.has(name)) return `\`${name}\` 슬래시 커맨드가 존재하지 않습니다.`;
+
+    try {
+      client.interactions.delete(name);
+      const remain = require.cache[require.resolve(file)];
+      delete require.cache[require.resolve(file)];
+      for (let i = 0; i < remain.parent.children.length; i++) {
+        if (remain.parent.children[i] === remain) {
+          remain.parent.children.splice(i, 1);
+          break;
+        }
+      }
+      client.logger.log(`Unloaded Interaction: ${name}`);
+    } catch (e) {
+      return `Failed to unload Interaction ${name}: ${e.stack}`;
+    }
   }
 
   client.waitFor = async (ms) => new Promise((r) => setTimeout(r, ms));
-
-  client.getGitVersion = () => execSync('git rev-parse HEAD')?.toString?.()?.trim?.()?.substr?.(0, 7);
 
   /* MISCELLANEOUS NON-CRITICAL FUNCTIONS */
 
@@ -355,6 +203,9 @@ module.exports = (client) => {
     value() {
       return this.replace(/([^\W_]+[^\s-]*) */g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
     },
+    enumerable: true,
+    configurable: true,
+    writable: true,
   });
 
   // <Array>.random() returns a single random element from an array
@@ -363,6 +214,9 @@ module.exports = (client) => {
     value() {
       return this[Math.floor(Math.random() * this.length)];
     },
+    enumerable: true,
+    configurable: true,
+    writable: true,
   });
 
   // These 2 process methods will catch exceptions and give *more details* about the error and stack trace.

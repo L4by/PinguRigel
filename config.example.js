@@ -1,3 +1,5 @@
+const {Permissions} = require('discord.js');
+
 const config = {
   // Bot Owner, level 3 by default.
   ownerID: '',
@@ -35,7 +37,9 @@ const config = {
       name: 'Moderator',
       check: (message) => {
         try {
-          return message.member.hasPermission(['MANAGE_GUILD']);
+          return message.member.permissions.has([
+            Permissions.FLAGS.MANAGE_GUILD,
+          ]);
         } catch {
           return false;
         }

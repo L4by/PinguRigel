@@ -26,33 +26,19 @@ exports.run = async (client, message, [action, ...val], level) => { // eslint-di
 
   switch (action) {
     case '받기':
-      const addRole = message.guild.roles.cache.find((role) => role.id === value || role.name === value);
-      if (!roleList.includes(addRole?.id)) {
-        message.reply([
-          '받을 수 있는 역할이 아닙니다.',
-          `**\`${this.help.name} 목록\`** 명령어로 받을 수 있는 역할을 확인해보세요.`,
-        ].join('\n'));
-      } else {
-        try {
-          await message.member.roles.set([addRole.id]);
-          await message.reply(`**\`${addRole.name}\`** 역할을 받았습니다!`);
-        } catch (err) {
-          console.error(err);
-          await message.reply([
-            '역할을 추가할 수 없습니다.',
-            '봇에 권한이 없어 발생한 오류일 가능성이 높습니다.',
-          ]);
-        }
-      }
+      await message.reply([
+        'This command is deprecated.',
+        'Use `/getrole` command instead.',
+      ]);
       break;
     case '추가':
       if (level < 3) return message.reply('해당 동작을 실행하기 위한 권한이 없습니다.');
       const role = message.guild.roles.cache.find((role) => role.id === value || role.name === value);
       const dangerousPerms = [
-        'MANAGE_GUILD',
-        'KICK_MEMBERS',
-        'BAN_MEMBERS',
-        'MANAGE_MESSAGES',
+        Discord.Permissions.FLAGS.MANAGE_GUILD,
+        Discord.Permissions.FLAGS.KICK_MEMBERS,
+        Discord.Permissions.FLAGS.BAN_MEMBERS,
+        Discord.Permissions.FLAGS.MANAGE_MESSAGES,
       ];
       if (!role) {
         message.reply('해당 역할이 서버에 존재하지 않습니다.');

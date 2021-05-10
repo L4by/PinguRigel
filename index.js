@@ -14,10 +14,8 @@ const path = require('path');
 // some might call it `cootchie`. Either way, when you see `client.something`,
 // or `bot.something`, this is what we're refering to. Your client.
 const client = new Discord.Client({
-  fetchAllMembers: true,
-  ws: {
-    intents: new Discord.Intents(Discord.Intents.ALL),
-  },
+  intents: new Discord.Intents(Discord.Intents.ALL),
+  partials: ['CHANNEL'],
 });
 
 // Here we load the config file that contains our token and our prefix values.
@@ -36,6 +34,7 @@ require('./modules/functions')(client);
 // catalogued, listed, etc.
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
+client.interactions = new Discord.Collection();
 
 // We're doing real fancy node 8 async/await stuff here, and to do that
 // we need to wrap stuff in an anonymous function. It's annoying but it works.
@@ -62,6 +61,14 @@ client.aliases = new Discord.Collection();
     client.logger.log(`Loading Event: ${eventName}`);
     const event = require(`./events/${file}`);
     client.on(eventName, event.bind(null, client));
+  });
+
+  const interactionDir = fs.readdirSync('./interactions/');
+  interactionDir.map((file) => {
+    if (!file.endsWith('.js')) return;
+    const interactName = path.parse(file).name;
+    const response = client.loadInteraction(interactName);
+    if (response) client.logger.log(response);
   });
 
   // Detect KeyboardInterrupt event

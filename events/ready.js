@@ -2,6 +2,13 @@ module.exports = async (client) => {
   // Log that the bot is online.
   client.logger.log(`Logged in as ${client.user.tag}!`, 'ready');
 
+  await client.application.fetch();
+  await client.application.commands.fetch();
+  await Promise.all(client.guilds.cache.map(async (guild) => {
+    await guild.members.fetch();
+    await guild.commands.fetch();
+  }));
+
   // Make the bot "play the game" which is the help command with default prefix.
   while (true) {
     await client.user.setActivity(client.config.status.random() || `${client.config.prefix} 도움말`, {type: 'WATCHING'});
