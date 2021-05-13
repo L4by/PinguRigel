@@ -22,7 +22,7 @@ module.exports = async (client, member) => {
         .addField('역할 안내', [
           '나이에 따라 다양한 역할을 지급받을 수 있습니다.',
           '**`!역할 목록`** 명령어를 입력해 역할을 확인할 수 있습니다.',
-          '확인하셨다면 **`!역할 받기 역할명`**을 입력해  알맞은 역할을 받아보세요.',
+          '확인하셨다면 **`/getrole <역할명>`**을 입력해  알맞은 역할을 받아보세요.',
         ].join('\n'))
         .setFooter(`계정 생성 일시: ${client.getDate(member.user.createdAt, 'YYYY년 MM월 DD일 HH:mm:ss')}`);
     await welcomeChannel.send(member.toString(), welcomeEmbed).catch(() => {});

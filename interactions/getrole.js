@@ -2,7 +2,7 @@ const fs = require('fs');
 
 exports.run = async (client, interaction) => { // eslint-disable-line no-unused-vars
   await interaction.defer();
-  const role = interaction.options[0].role;
+  const role = interaction.options[0]?.role;
   const member = interaction.member;
   const roleList = JSON.parse(fs.readFileSync('./data/roles.json').toString());
 
